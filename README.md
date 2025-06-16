@@ -57,19 +57,19 @@ Each part is unpacked to show:
 
 ## Setup
 
+This project can run without a build step by opening `public/index.html` directly.
+Ensure you have an internet connection as React, Tailwind and Mapbox are loaded from CDNs.
+Edit the `MAPBOX_TOKEN` variable in that file with your Mapbox access token.
+
+For development with Vite:
+
 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-2. Create a `.env` file in the project root and add your Mapbox token:
-
-```bash
-echo "VITE_MAPBOX_TOKEN=your_mapbox_access_token" > .env
-```
-
-3. Start the development server
+2. Start the development server
 
 ```bash
 npm start
