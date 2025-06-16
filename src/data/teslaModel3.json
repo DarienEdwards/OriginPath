@@ -1,3 +1,7 @@
 {
-  "components": []
+  "components": [
+    { "id": "battery", "name": "Battery" },
+    { "id": "motor", "name": "Motor" },
+    { "id": "chassis", "name": "Chassis" }
+  ]
 }
