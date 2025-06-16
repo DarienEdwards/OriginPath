@@ -1,54 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import PartTree from './components/PartTree.jsx';
-import MapView from './components/MapView.jsx';
-import ModalDetails from './components/ModalDetails.jsx';
-import WhatIfSimulator from './components/WhatIfSimulator.jsx';
-import { parseSupplyData } from './utils/supplyParser.js';
-import componentsJson from './data/teslaModel3.json';
-import locationsJson from './data/locations.json';
+import React from 'react';
+import Header from './components/Header.jsx';
+import PartList from './components/PartList.jsx';
+import PartModal from './components/PartModal.jsx';
 
 function App() {
-  const [data, setData] = useState({ components: {}, locations: [] });
-  const [selectedPart, setSelectedPart] = useState(null);
+  const parts = [
+    'Battery Pack',
+    'Electric Motor',
+    'Aluminum Chassis',
+    'Infotainment System',
+  ];
 
-  useEffect(() => {
-    setData(parseSupplyData(componentsJson, locationsJson));
-  }, []);
+  const selectedPart = null; // placeholder for future state
 
-  const handlePartClick = (part) => {
-    setSelectedPart(part);
-  };
+  const handleSelect = () => {};
+  const handleClose = () => {};
 
-  const closeModal = () => setSelectedPart(null);
+  const modalContent = selectedPart
+    ? {
+        title: selectedPart,
+        footprint: 'CO2 footprint details',
+        risks: 'Risk info',
+        route: 'Route summary',
+      }
+    : null;
 
   return (
-    // Full-height layout split into header, sidebar, and main map area
-    <div className="h-screen flex flex-col font-sans">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-gray-900 to-gray-700 text-white p-4 shadow">
-        <h1 className="text-xl font-semibold tracking-wide">OriginPath</h1>
-      </header>
+    <div className="app-container">
+      <Header
+        title="OriginPath"
+        subtitle="Trace the supply chain of the Tesla Model 3"
+      />
 
-      {/* Sidebar and map container */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <aside className="w-64 bg-white border-r border-gray-200 p-4 overflow-y-auto">
-          <h2 className="font-semibold mb-2">Tesla Model 3 Parts</h2>
-          <PartTree data={data.components} onSelect={handlePartClick} />
-        </aside>
+      <main className="grid grid-cols-3 gap-4 p-4">
+        <PartList parts={parts} onSelect={handleSelect} />
 
-        <main className="flex-1 bg-gray-100">
-          <MapView locations={selectedPart ? selectedPart.locations : data.locations} />
-        </main>
-      </div>
+        <section className="col-span-2 border p-4 relative">
+          <h2 className="font-semibold text-lg mb-2">Supply Chain Map</h2>
+          <div className="h-[400px] bg-gray-100 border-dashed border-2 border-gray-300 flex items-center justify-center">
+            <span className="text-gray-400">[Mapbox GL JS view here]</span>
+          </div>
+        </section>
+      </main>
 
-      {selectedPart && (
-        <ModalDetails component={selectedPart} onClose={closeModal} />
-      )}
+      <footer className="p-4 border-t text-sm text-gray-500 text-center">
+        Built by Darien Edwards — MIT License
+      </footer>
 
-      <div className="absolute bottom-4 right-4">
-        <WhatIfSimulator component={selectedPart} />
-      </div>
+      <PartModal part={modalContent} onClose={handleClose} />
     </div>
   );
 }
