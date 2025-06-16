@@ -1,4 +1,4 @@
-import React from 'https://esm.sh/react@18.2.0';
+import React from 'react';
 
 const Header = () => (
   <header className="bg-gray-800 text-white p-4">Header Placeholder</header>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'https://esm.sh/react@18.2.0';
+import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'https://esm.sh/mapbox-gl@2.15.0';
 
 mapboxgl.accessToken = window.MAPBOX_TOKEN || '';

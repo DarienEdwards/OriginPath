@@ -1,4 +1,4 @@
-import React from 'https://esm.sh/react@18.2.0';
+import React from 'react';
 import { calculateRisk } from '../utils/riskEngine.js';
 
 const ModalDetails = ({ component, onClose }) => {

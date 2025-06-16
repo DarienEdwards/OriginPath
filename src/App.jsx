@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'https://esm.sh/react@18.2.0';
+import React, { useState, useEffect } from 'react';
 import PartTree from './components/PartTree.jsx';
 import MapView from './components/MapView.jsx';
 import ModalDetails from './components/ModalDetails.jsx';
