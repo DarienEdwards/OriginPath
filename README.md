@@ -63,13 +63,17 @@ Each part is unpacked to show:
 npm install
 ```
 
-2. Start the development server
+2. Create a `.env` file in the project root and add your Mapbox token:
+
+```bash
+echo "VITE_MAPBOX_TOKEN=your_mapbox_access_token" > .env
+```
+
+3. Start the development server
 
 ```bash
 npm start
 ```
-
-The map view requires a Mapbox access token. Replace `YOUR_MAPBOX_ACCESS_TOKEN` in `src/components/MapView.jsx` with your token.
 
 ---
 
