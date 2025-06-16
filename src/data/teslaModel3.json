@@ -1,6 +1,13 @@
 {
   "components": [
-    { "id": "battery", "name": "Battery" },
+    {
+      "id": "battery",
+      "name": "Battery",
+      "children": [
+        { "id": "cells", "name": "Cells" },
+        { "id": "casing", "name": "Casing" }
+      ]
+    },
     { "id": "motor", "name": "Motor" },
     { "id": "chassis", "name": "Chassis" }
   ]
