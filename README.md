@@ -52,8 +52,24 @@ Each part is unpacked to show:
 - **Frontend**: React, TailwindCSS  
 - **Visualization**: D3.js / SVG for interactive trees  
 - **Mapping**: Mapbox GL JS  
-- **Data Layer**: JSON (MVP), Supabase (future)  
-- **Export**: html2pdf or jsPDF for on-demand report generation  
+- **Data Layer**: JSON (MVP), Supabase (future)
+- **Export**: html2pdf or jsPDF for on-demand report generation
+
+## Setup
+
+1. Install dependencies
+
+```bash
+npm install
+```
+
+2. Start the development server
+
+```bash
+npm start
+```
+
+The map view requires a Mapbox access token. Replace `YOUR_MAPBOX_ACCESS_TOKEN` in `src/components/MapView.jsx` with your token.
 
 ---
 

@@ -1,3 +1,22 @@
 {
-  "locations": []
+  "locations": [
+    {
+      "id": "loc1",
+      "name": "Nevada Gigafactory",
+      "componentId": "battery",
+      "lat": 39.5,
+      "lng": -119.7,
+      "region": "North America",
+      "materialType": "Lithium"
+    },
+    {
+      "id": "loc2",
+      "name": "Shanghai Plant",
+      "componentId": "motor",
+      "lat": 31.3,
+      "lng": 121.5,
+      "region": "Asia",
+      "materialType": "Rare Earth"
+    }
+  ]
 }

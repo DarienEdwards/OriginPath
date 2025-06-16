@@ -1,21 +1,25 @@
-import React, { useState } from 'react';
-
-// Static list of Tesla Model 3 parts for the sidebar
-const parts = ['Battery', 'Motor', 'Chassis'];
+import React, { useState, useEffect } from 'react';
+import PartTree from './components/PartTree.jsx';
+import MapView from './components/MapView.jsx';
+import ModalDetails from './components/ModalDetails.jsx';
+import WhatIfSimulator from './components/WhatIfSimulator.jsx';
+import { parseSupplyData } from './utils/supplyParser.js';
+import componentsJson from './data/teslaModel3.json';
+import locationsJson from './data/locations.json';
 
 function App() {
-  // Track which part is selected and whether the info modal is visible
+  const [data, setData] = useState({ components: {}, locations: [] });
   const [selectedPart, setSelectedPart] = useState(null);
-  const [showModal, setShowModal] = useState(false);
 
-  // When a part is clicked, open the modal with that part's name
+  useEffect(() => {
+    setData(parseSupplyData(componentsJson, locationsJson));
+  }, []);
+
   const handlePartClick = (part) => {
     setSelectedPart(part);
-    setShowModal(true);
   };
 
-  // Close the modal
-  const closeModal = () => setShowModal(false);
+  const closeModal = () => setSelectedPart(null);
 
   return (
     // Full-height layout split into header, sidebar, and main map area
@@ -30,43 +34,21 @@ function App() {
         {/* Sidebar */}
         <aside className="w-64 bg-gray-100 p-4 overflow-y-auto">
           <h2 className="font-semibold mb-2">Tesla Model 3 Parts</h2>
-          <ul className="space-y-1">
-            {parts.map((part) => (
-              <li key={part}>
-                <button
-                  className="text-blue-600 hover:underline"
-                  onClick={() => handlePartClick(part)}
-                >
-                  {part}
-                </button>
-              </li>
-            ))}
-          </ul>
+          <PartTree data={data.components} onSelect={handlePartClick} />
         </aside>
 
-        {/* Map placeholder */}
-        <main className="flex-1 bg-gray-200 flex items-center justify-center">
-          <div className="text-gray-500">Map Placeholder</div>
+        <main className="flex-1 bg-gray-200">
+          <MapView locations={selectedPart ? selectedPart.locations : data.locations} />
         </main>
       </div>
 
-      {/* Modal overlay */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded shadow-xl w-80">
-            <h3 className="text-lg font-bold mb-2">{selectedPart}</h3>
-            <p className="text-sm text-gray-700">
-              Supply chain details coming soon...
-            </p>
-            <button
-              className="mt-4 text-blue-600 hover:underline"
-              onClick={closeModal}
-            >
-              Close
-            </button>
-          </div>
-        </div>
+      {selectedPart && (
+        <ModalDetails component={selectedPart} onClose={closeModal} />
       )}
+
+      <div className="absolute bottom-4 right-4">
+        <WhatIfSimulator component={selectedPart} />
+      </div>
     </div>
   );
 }
