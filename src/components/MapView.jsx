@@ -1,11 +1,12 @@
-import React, { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
+import React, { useEffect, useRef } from 'https://esm.sh/react@18.2.0';
+import mapboxgl from 'https://esm.sh/mapbox-gl@2.15.0';
 
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+mapboxgl.accessToken = window.MAPBOX_TOKEN || '';
 
 const MapView = ({ locations = [] }) => {
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
+  const markersRef = useRef([]);
 
   useEffect(() => {
     mapRef.current = new mapboxgl.Map({
@@ -21,12 +22,61 @@ const MapView = ({ locations = [] }) => {
 
   useEffect(() => {
     if (!mapRef.current) return;
+
+    // remove old markers
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current = [];
+
+    const routeCoordinates = [];
+
     locations.forEach((loc) => {
-      new mapboxgl.Marker()
+      const marker = new mapboxgl.Marker()
         .setLngLat([loc.lng, loc.lat])
         .setPopup(new mapboxgl.Popup().setText(loc.name))
         .addTo(mapRef.current);
+      markersRef.current.push(marker);
+      routeCoordinates.push([loc.lng, loc.lat]);
     });
+
+    const drawRoute = () => {
+      const routeData = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: routeCoordinates,
+        },
+      };
+
+      if (mapRef.current.getSource('route')) {
+        mapRef.current.getSource('route').setData(routeData);
+      } else {
+        mapRef.current.addSource('route', {
+          type: 'geojson',
+          data: routeData,
+        });
+
+        mapRef.current.addLayer({
+          id: 'route-line',
+          type: 'line',
+          source: 'route',
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round',
+          },
+          paint: {
+            'line-color': '#ff7e5f',
+            'line-width': 4,
+          },
+        });
+      }
+    };
+
+    if (mapRef.current.loaded()) {
+      drawRoute();
+    } else {
+      mapRef.current.once('load', drawRoute);
+    }
   }, [locations]);
 
   return <div ref={mapContainer} className="w-full h-full" />;

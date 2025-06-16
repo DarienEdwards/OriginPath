@@ -4,9 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OriginPath</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://unpkg.com/mapbox-gl@2.15.0/dist/mapbox-gl.css"
+      rel="stylesheet"
+    />
   </head>
-  <body>
+  <body class="bg-gray-50 text-gray-800">
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Set your Mapbox token here
+      window.MAPBOX_TOKEN = '';
+    </script>
+    <script type="module" src="../src/main.jsx"></script>
   </body>
 </html>

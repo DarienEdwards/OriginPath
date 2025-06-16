@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'https://esm.sh/react@18.2.0';
 import PartTree from './components/PartTree.jsx';
 import MapView from './components/MapView.jsx';
 import ModalDetails from './components/ModalDetails.jsx';
@@ -25,19 +25,19 @@ function App() {
     // Full-height layout split into header, sidebar, and main map area
     <div className="h-screen flex flex-col font-sans">
       {/* Header */}
-      <header className="bg-gray-800 text-white p-4">
-        <h1 className="text-xl font-bold">OriginPath</h1>
+      <header className="bg-gradient-to-r from-gray-900 to-gray-700 text-white p-4 shadow">
+        <h1 className="text-xl font-semibold tracking-wide">OriginPath</h1>
       </header>
 
       {/* Sidebar and map container */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-64 bg-gray-100 p-4 overflow-y-auto">
+        <aside className="w-64 bg-white border-r border-gray-200 p-4 overflow-y-auto">
           <h2 className="font-semibold mb-2">Tesla Model 3 Parts</h2>
           <PartTree data={data.components} onSelect={handlePartClick} />
         </aside>
 
-        <main className="flex-1 bg-gray-200">
+        <main className="flex-1 bg-gray-100">
           <MapView locations={selectedPart ? selectedPart.locations : data.locations} />
         </main>
       </div>
