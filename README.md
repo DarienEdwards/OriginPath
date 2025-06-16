@@ -99,7 +99,7 @@ originpath/
 
 ## Future Development
 
-OriginPath will expand deeper into the Tesla ecosystem across the DREAM stack: **Data, Robotics, Energy, AI, and Manufacturing.**
+OriginPath will expand deeper into the Tesla ecosystem across the DREAMS stack: **Data, Robotics, Energy, AI, Manufacturing, and Space.**
 
 ### Phase 1: Tesla Model 3 (Core)
 - Battery packs (Li-ion, cobalt, nickel, graphite)  
@@ -127,7 +127,12 @@ OriginPath will expand deeper into the Tesla ecosystem across the DREAM stack: *
 ### Phase 5: GigaGlobal View
 - Global factory map: Fremont, Shanghai, Berlin, Austin, Mexico  
 - Real-time export paths and trade maps  
-- Emissions and risk overlays per territory  
+- Emissions and risk overlays per territory
+
+### Phase 6: Space Frontier
+- Supply chains for reusable rockets
+- Satellite component traceability
+- Mapping materials for other space technologies
 
 ---
 
