@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
+import React, { useEffect, useRef } from 'https://esm.sh/react@18.2.0';
+import mapboxgl from 'https://esm.sh/mapbox-gl@2.15.0';
 
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+mapboxgl.accessToken = window.MAPBOX_TOKEN || '';
 
 const MapView = ({ locations = [] }) => {
   const mapContainer = useRef(null);
