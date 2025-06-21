@@ -55,7 +55,7 @@ function App() {
 
         <section className="col-span-2 border p-4 relative">
           <h2 className="font-semibold text-lg mb-2">Supply Chain Map</h2>
-          <MapView locations={[]} />
+          <MapView locations={selectedPart ? selectedPart.locations : data.locations} />
         </section>
       </main>
 
