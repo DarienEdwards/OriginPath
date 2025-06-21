@@ -1,29 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from './components/Header.jsx';
 import PartList from './components/PartList.jsx';
 import PartModal from './components/PartModal.jsx';
 
+const partData = {
+  'Battery Pack': {
+    footprint: 'CO₂ Footprint: 312.5 kg',
+    risks: 'Risks: Water Depletion, Export Restrictions',
+    route: 'Route: Chile → China → Nevada',
+  },
+  'Electric Motor': {
+    footprint: 'CO₂ Footprint: 190.2 kg',
+    risks: 'Risks: Rare Earth Extraction, Smelting Emissions',
+    route: 'Route: Inner Mongolia → Guangdong → California',
+  },
+  'Aluminum Chassis': {
+    footprint: 'CO₂ Footprint: 210.4 kg',
+    risks: 'Risks: High Energy Use, Smelting Waste',
+    route: 'Route: Quebec → Texas → Fremont',
+  },
+  'Infotainment System': {
+    footprint: 'CO₂ Footprint: 142.8 kg',
+    risks: 'Risks: E-waste, Conflict Minerals',
+    route: 'Route: Taiwan → China → Nevada',
+  },
+};
+
 function App() {
-  const parts = [
-    'Battery Pack',
-    'Electric Motor',
-    'Aluminum Chassis',
-    'Infotainment System',
-  ];
+  const [selectedPart, setSelectedPart] = useState(null);
 
-  const selectedPart = null; // placeholder for future state
+  const parts = Object.keys(partData);
 
-  const handleSelect = () => {};
-  const handleClose = () => {};
+  const handleSelect = (part) => {
+    const details = partData[part];
+    if (details) {
+      setSelectedPart({ title: part, ...details });
+    }
+  };
 
-  const modalContent = selectedPart
-    ? {
-        title: selectedPart,
-        footprint: 'CO2 footprint details',
-        risks: 'Risk info',
-        route: 'Route summary',
-      }
-    : null;
+  const handleClose = () => setSelectedPart(null);
+
+  const modalContent = selectedPart;
 
   return (
     <div className="app-container">
@@ -38,7 +55,9 @@ function App() {
         <section className="col-span-2 border p-4 relative">
           <h2 className="font-semibold text-lg mb-2">Supply Chain Map</h2>
           <div className="h-[400px] bg-gray-100 border-dashed border-2 border-gray-300 flex items-center justify-center">
-            <span className="text-gray-400">[Mapbox GL JS view here]</span>
+            <span className="text-gray-400">
+              {selectedPart ? `Map view for ${selectedPart.title}` : '[Mapbox GL JS view here]'}
+            </span>
           </div>
         </section>
       </main>
