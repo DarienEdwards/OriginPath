@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Header from './components/Header.jsx';
 import PartList from './components/PartList.jsx';
 import PartModal from './components/PartModal.jsx';
+import MapView from './components/MapView.jsx';
 
 const partData = {
   'Battery Pack': {
@@ -54,11 +55,7 @@ function App() {
 
         <section className="col-span-2 border p-4 relative">
           <h2 className="font-semibold text-lg mb-2">Supply Chain Map</h2>
-          <div className="h-[400px] bg-gray-100 border-dashed border-2 border-gray-300 flex items-center justify-center">
-            <span className="text-gray-400">
-              {selectedPart ? `Map view for ${selectedPart.title}` : '[Mapbox GL JS view here]'}
-            </span>
-          </div>
+          <MapView locations={[]} />
         </section>
       </main>
 
