@@ -1,22 +1,79 @@
 {
   "locations": [
     {
-      "id": "loc1",
-      "name": "Nevada Gigafactory",
       "componentId": "battery",
-      "lat": 39.5,
-      "lng": -119.7,
-      "region": "North America",
-      "materialType": "Lithium"
+      "name": "Atacama, Chile",
+      "lat": -24.7836,
+      "lng": -69.0494
     },
     {
-      "id": "loc2",
-      "name": "Shanghai Plant",
+      "componentId": "battery",
+      "name": "Shanghai, China",
+      "lat": 31.2304,
+      "lng": 121.4737
+    },
+    {
+      "componentId": "battery",
+      "name": "Reno, Nevada",
+      "lat": 39.5296,
+      "lng": -119.8138
+    },
+
+    {
       "componentId": "motor",
-      "lat": 31.3,
-      "lng": 121.5,
-      "region": "Asia",
-      "materialType": "Rare Earth"
+      "name": "Baotou, Inner Mongolia",
+      "lat": 40.6525,
+      "lng": 109.8229
+    },
+    {
+      "componentId": "motor",
+      "name": "Guangdong, China",
+      "lat": 23.3790,
+      "lng": 113.7633
+    },
+    {
+      "componentId": "motor",
+      "name": "Fremont, California",
+      "lat": 37.5483,
+      "lng": -121.9886
+    },
+
+    {
+      "componentId": "chassis",
+      "name": "Quebec, Canada",
+      "lat": 52.9399,
+      "lng": -73.5491
+    },
+    {
+      "componentId": "chassis",
+      "name": "Corpus Christi, Texas",
+      "lat": 27.8006,
+      "lng": -97.3964
+    },
+    {
+      "componentId": "chassis",
+      "name": "Fremont, California",
+      "lat": 37.5483,
+      "lng": -121.9886
+    },
+
+    {
+      "componentId": "infotainment",
+      "name": "Taipei, Taiwan",
+      "lat": 25.0330,
+      "lng": 121.5654
+    },
+    {
+      "componentId": "infotainment",
+      "name": "Shenzhen, China",
+      "lat": 22.5431,
+      "lng": 114.0579
+    },
+    {
+      "componentId": "infotainment",
+      "name": "Reno, Nevada",
+      "lat": 39.5296,
+      "lng": -119.8138
     }
   ]
 }

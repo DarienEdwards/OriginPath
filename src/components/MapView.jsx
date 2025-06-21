@@ -7,6 +7,7 @@ const MapView = ({ locations = [] }) => {
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef([]);
+  const previousLocationCount = useRef(0);
 
   useEffect(() => {
     mapRef.current = new mapboxgl.Map({
@@ -15,78 +16,98 @@ const MapView = ({ locations = [] }) => {
       center: [0, 20],
       zoom: 1.2,
     });
+
+    mapRef.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
     return () => {
       if (mapRef.current) mapRef.current.remove();
     };
   }, []);
 
   useEffect(() => {
-    if (!mapRef.current) return;
+    const map = mapRef.current;
+    if (!map || !map.isStyleLoaded()) {
+      map.once('style.load', () => updateMap(locations));
+      return;
+    }
+    updateMap(locations);
+  }, [locations]);
 
-    const validLocations = Array.isArray(locations)
-      ? locations.filter(
-          (l) => typeof l.lat === 'number' && typeof l.lng === 'number'
-        )
-      : [];
+  const updateMap = (locations) => {
+    const map = mapRef.current;
+    if (!map) return;
 
-    // remove old markers
+    // Remove old markers
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    const routeCoordinates = [];
+    const bounds = new mapboxgl.LngLatBounds();
 
-    validLocations.forEach((loc) => {
+    locations.forEach((loc) => {
       const marker = new mapboxgl.Marker()
         .setLngLat([loc.lng, loc.lat])
         .setPopup(new mapboxgl.Popup().setText(loc.name))
-        .addTo(mapRef.current);
+        .addTo(map);
+
       markersRef.current.push(marker);
-      routeCoordinates.push([loc.lng, loc.lat]);
+      bounds.extend([loc.lng, loc.lat]);
     });
 
-    const drawRoute = () => {
-      const routeData = {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'LineString',
-          coordinates: routeCoordinates,
-        },
-      };
-
-      if (mapRef.current.getSource('route')) {
-        mapRef.current.getSource('route').setData(routeData);
-      } else {
-        mapRef.current.addSource('route', {
-          type: 'geojson',
-          data: routeData,
-        });
-
-        mapRef.current.addLayer({
-          id: 'route-line',
-          type: 'line',
-          source: 'route',
-          layout: {
-            'line-join': 'round',
-            'line-cap': 'round',
-          },
-          paint: {
-            'line-color': '#ff7e5f',
-            'line-width': 4,
-          },
-        });
-      }
+    // Draw route line
+    const routeCoordinates = locations.map(loc => [loc.lng, loc.lat]);
+    const routeData = {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'LineString',
+        coordinates: routeCoordinates,
+      },
     };
 
-    if (mapRef.current.loaded()) {
-      drawRoute();
+    if (map.getSource('route')) {
+      map.getSource('route').setData(routeData);
     } else {
-      mapRef.current.once('load', drawRoute);
-    }
-  }, [locations]);
+      map.addSource('route', {
+        type: 'geojson',
+        data: routeData,
+      });
 
-  // Temporary background color helps detect zero-height containers
-  return <div ref={mapContainer} className="w-full h-full bg-gray-200" />;
+      map.addLayer({
+        id: 'route-line',
+        type: 'line',
+        source: 'route',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round',
+        },
+        paint: {
+          'line-color': '#ff7e5f',
+          'line-width': 4,
+        },
+      });
+    }
+
+    // Only adjust bounds if location count changed (new part)
+    if (locations.length !== previousLocationCount.current) {
+      if (locations.length > 1) {
+        map.fitBounds(bounds, {
+          padding: 60,
+          duration: 800,
+          maxZoom: 4.5,
+        });
+      } else if (locations.length === 1) {
+        map.flyTo({
+          center: [locations[0].lng, locations[0].lat],
+          zoom: 4,
+          duration: 800,
+        });
+      }
+
+      previousLocationCount.current = locations.length;
+    }
+  };
+
+  return <div ref={mapContainer} className="w-full h-full bg-gray-200 rounded-md" />;
 };
 
 export default MapView;

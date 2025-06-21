@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import Header from './components/Header.jsx';
 import PartList from './components/PartList.jsx';
 import PartModal from './components/PartModal.jsx';
-import MapView from './components/MapView.jsx';
+import MapView from './components/MapView.jsx'; 
+import locationsJson from './data/locations.json';
+
 
 const partData = {
   'Battery Pack': {
@@ -39,6 +41,17 @@ function App() {
     }
   };
 
+  const getLocationsForPart = (partName) => {
+    if (!partName) return locationsJson.locations;
+    if (partName === 'Battery Pack') return locationsJson.locations.filter(loc => loc.componentId === 'battery');
+    if (partName === 'Electric Motor') return locationsJson.locations.filter(loc => loc.componentId === 'motor');
+    if (partName === 'Aluminum Chassis') return locationsJson.locations.filter(loc => loc.componentId === 'chassis');
+    if (partName === 'Infotainment System') return locationsJson.locations.filter(loc => loc.componentId === 'infotainment');
+    // add more mappings here if needed
+    return [];
+  };
+  
+
   const handleClose = () => setSelectedPart(null);
 
   const modalContent = selectedPart;
@@ -55,7 +68,7 @@ function App() {
 
         <section className="col-span-2 border p-4 relative h-96">
           <h2 className="font-semibold text-lg mb-2">Supply Chain Map</h2>
-          <MapView locations={selectedPart ? selectedPart.locations : data.locations} />
+          <MapView locations={getLocationsForPart(selectedPart?.title)} />
         </section>
       </main>
 
