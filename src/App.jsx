@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import Header from './components/Header.jsx';
 import PartList from './components/PartList.jsx';
 import PartModal from './components/PartModal.jsx';
-import MapView from './components/MapView.jsx'; 
+import MapView from './components/MapView.jsx';
+import AIInsights from './components/AIInsights.jsx';
 import locationsJson from './data/locations.json';
 
 
@@ -83,6 +84,7 @@ function App() {
         </button>
       </div>
     )}
+    <AIInsights part={selectedPart} />
   </section>
 </main>
 
