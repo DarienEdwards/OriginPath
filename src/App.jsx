@@ -42,7 +42,7 @@ function App() {
   };
 
   const getLocationsForPart = (partName) => {
-    if (!partName) return locationsJson.locations;
+    if (!partName) return [];
     if (partName === 'Battery Pack') return locationsJson.locations.filter(loc => loc.componentId === 'battery');
     if (partName === 'Electric Motor') return locationsJson.locations.filter(loc => loc.componentId === 'motor');
     if (partName === 'Aluminum Chassis') return locationsJson.locations.filter(loc => loc.componentId === 'chassis');
@@ -91,7 +91,8 @@ function App() {
         Built by Darien Edwards — MIT License
       </footer>
 
-      <PartModal part={modalContent} onClose={handleClose} />
+      {/* Removed PartModal to avoid popup overlay */}
+
     </div>
   );
 }

@@ -9,7 +9,6 @@ const MapView = ({ locations = [] }) => {
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef([]);
-  const previousLocationCount = useRef(0);
 
   useEffect(() => {
     mapRef.current = new mapboxgl.Map({
@@ -28,7 +27,10 @@ const MapView = ({ locations = [] }) => {
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || locations.length === 0) {
+      clearMap();
+      return;
+    }
 
     if (!map.isStyleLoaded()) {
       map.once('style.load', () => updateMap(locations));
@@ -37,37 +39,50 @@ const MapView = ({ locations = [] }) => {
     }
   }, [locations]);
 
+  const clearMap = () => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    // Remove markers
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current = [];
+
+    // Remove route
+    if (map.getLayer('route-line')) {
+      map.removeLayer('route-line');
+    }
+    if (map.getSource('route')) {
+      map.removeSource('route');
+    }
+  };
+
   const updateMap = (locations) => {
     const map = mapRef.current;
     if (!map) return;
 
-    // Remove old markers
-    markersRef.current.forEach((m) => m.remove());
-    markersRef.current = [];
+    clearMap();
 
     const bounds = new mapboxgl.LngLatBounds();
 
     locations.forEach((loc) => {
       const marker = new mapboxgl.Marker()
         .setLngLat([loc.lng, loc.lat])
-        .addTo(map); // No popups anymore
+        .addTo(map);
       markersRef.current.push(marker);
       bounds.extend([loc.lng, loc.lat]);
     });
 
-    const routeCoordinates = locations.map((loc) => [loc.lng, loc.lat]);
-    const routeData = {
-      type: 'Feature',
-      properties: {},
-      geometry: {
-        type: 'LineString',
-        coordinates: routeCoordinates,
-      },
-    };
+    if (locations.length > 1) {
+      const routeCoordinates = locations.map((loc) => [loc.lng, loc.lat]);
+      const routeData = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: routeCoordinates,
+        },
+      };
 
-    if (map.getSource('route')) {
-      map.getSource('route').setData(routeData);
-    } else {
       map.addSource('route', {
         type: 'geojson',
         data: routeData,
@@ -88,22 +103,12 @@ const MapView = ({ locations = [] }) => {
       });
     }
 
-    if (locations.length !== previousLocationCount.current) {
-      if (locations.length > 1) {
-        map.fitBounds(bounds, {
-          padding: 60,
-          duration: 800,
-          maxZoom: 4.5,
-        });
-      } else if (locations.length === 1) {
-        map.flyTo({
-          center: [locations[0].lng, locations[0].lat],
-          zoom: 4,
-          duration: 800,
-        });
-      }
-
-      previousLocationCount.current = locations.length;
+    if (locations.length > 0) {
+      map.fitBounds(bounds, {
+        padding: 60,
+        duration: 800,
+        maxZoom: 4.5,
+      });
     }
   };
 
