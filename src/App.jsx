@@ -53,7 +53,7 @@ function App() {
       <main className="grid grid-cols-3 gap-4 p-4">
         <PartList parts={parts} onSelect={handleSelect} />
 
-        <section className="col-span-2 border p-4 relative">
+        <section className="col-span-2 border p-4 relative h-96">
           <h2 className="font-semibold text-lg mb-2">Supply Chain Map</h2>
           <MapView locations={selectedPart ? selectedPart.locations : data.locations} />
         </section>

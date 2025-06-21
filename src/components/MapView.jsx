@@ -23,13 +23,19 @@ const MapView = ({ locations = [] }) => {
   useEffect(() => {
     if (!mapRef.current) return;
 
+    const validLocations = Array.isArray(locations)
+      ? locations.filter(
+          (l) => typeof l.lat === 'number' && typeof l.lng === 'number'
+        )
+      : [];
+
     // remove old markers
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
     const routeCoordinates = [];
 
-    locations.forEach((loc) => {
+    validLocations.forEach((loc) => {
       const marker = new mapboxgl.Marker()
         .setLngLat([loc.lng, loc.lat])
         .setPopup(new mapboxgl.Popup().setText(loc.name))
@@ -79,7 +85,8 @@ const MapView = ({ locations = [] }) => {
     }
   }, [locations]);
 
-  return <div ref={mapContainer} className="w-full h-full" />;
+  // Temporary background color helps detect zero-height containers
+  return <div ref={mapContainer} className="w-full h-full bg-gray-200" />;
 };
 
 export default MapView;
