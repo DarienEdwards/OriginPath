@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'https://esm.sh/mapbox-gl@2.15.0';
 
-mapboxgl.accessToken = window.MAPBOX_TOKEN || 'pk.eyJ1IjoiZGFyaWVuZWR3YXJkcyIsImEiOiJjbWJ6Y29waTUxeG93MmxwdGZjbzhibTdoIn0.0oLGkv-Zk7J0-ah4aO8dUA';
+mapboxgl.accessToken =
+  window.MAPBOX_TOKEN ||
+  'pk.eyJ1IjoiZGFyaWVuZWR3YXJkcyIsImEiOiJjbWJ6Y29waTUxeG93MmxwdGZjbzhibTdoIn0.0oLGkv-Zk7J0-ah4aO8dUA';
 
 const MapView = ({ locations = [] }) => {
   const mapContainer = useRef(null);
@@ -26,11 +28,13 @@ const MapView = ({ locations = [] }) => {
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !map.isStyleLoaded()) {
+    if (!map) return;
+
+    if (!map.isStyleLoaded()) {
       map.once('style.load', () => updateMap(locations));
-      return;
+    } else {
+      updateMap(locations);
     }
-    updateMap(locations);
   }, [locations]);
 
   const updateMap = (locations) => {
@@ -46,15 +50,12 @@ const MapView = ({ locations = [] }) => {
     locations.forEach((loc) => {
       const marker = new mapboxgl.Marker()
         .setLngLat([loc.lng, loc.lat])
-        .setPopup(new mapboxgl.Popup().setText(loc.name))
-        .addTo(map);
-
+        .addTo(map); // No popups anymore
       markersRef.current.push(marker);
       bounds.extend([loc.lng, loc.lat]);
     });
 
-    // Draw route line
-    const routeCoordinates = locations.map(loc => [loc.lng, loc.lat]);
+    const routeCoordinates = locations.map((loc) => [loc.lng, loc.lat]);
     const routeData = {
       type: 'Feature',
       properties: {},
@@ -87,7 +88,6 @@ const MapView = ({ locations = [] }) => {
       });
     }
 
-    // Only adjust bounds if location count changed (new part)
     if (locations.length !== previousLocationCount.current) {
       if (locations.length > 1) {
         map.fitBounds(bounds, {

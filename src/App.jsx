@@ -63,14 +63,29 @@ function App() {
         subtitle="Trace the supply chain of the Tesla Model 3"
       />
 
-      <main className="grid grid-cols-3 gap-4 p-4">
-        <PartList parts={parts} onSelect={handleSelect} />
+<main className="grid grid-cols-3 gap-4 p-4">
+  <PartList parts={parts} onSelect={handleSelect} />
 
-        <section className="col-span-2 border p-4 relative h-96">
-          <h2 className="font-semibold text-lg mb-2">Supply Chain Map</h2>
-          <MapView locations={getLocationsForPart(selectedPart?.title)} />
-        </section>
-      </main>
+  <section className="col-span-2 grid grid-cols-3 gap-4">
+    <div className="col-span-2 border p-4 relative h-96">
+      <h2 className="font-semibold text-lg mb-2">Supply Chain Map</h2>
+      <MapView locations={getLocationsForPart(selectedPart?.title)} />
+    </div>
+
+    {selectedPart && (
+      <div className="border p-4 text-sm bg-white">
+        <h3 className="font-semibold text-base mb-2">{selectedPart.title}</h3>
+        <p>{selectedPart.footprint}</p>
+        <p>{selectedPart.risks}</p>
+        <p>{selectedPart.route}</p>
+        <button onClick={handleClose} className="mt-2 px-2 py-1 text-white bg-blue-600 rounded">
+          Close
+        </button>
+      </div>
+    )}
+  </section>
+</main>
+
 
       <footer className="p-4 border-t text-sm text-gray-500 text-center">
         Built by Darien Edwards — MIT License
