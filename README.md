@@ -42,8 +42,17 @@ Each part is unpacked to show:
 - **What-If Simulator**  
   Explore alternative sourcing options and compare tradeoffs in emissions or risk.
 
-- **Exportable Reports**  
+- **Exportable Reports**
   Download clean reports for presentations, education, or internal review.
+
+- **AI Insights Panel**
+  Generate sustainability and geopolitical analysis for each component using OpenAI.
+
+- **Risk Scoring Engine**
+  Calculate risk scores based on regions and material types to prioritize concerns.
+
+- **Supply Parser**
+  Automatically map components to their sourcing locations for richer visualization.
 
 ---
 
