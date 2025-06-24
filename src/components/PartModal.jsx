@@ -10,9 +10,13 @@ const PartModal = ({ part, onClose }) => {
         <p className="text-sm mt-2">{part.footprint}</p>
         <p className="text-sm">{part.risks}</p>
         <p className="text-sm">{part.route}</p>
-        <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded" onClick={onClose}>
-          Close
-        </button>
+        <button
+  className="absolute top-2 right-2 text-gray-500 hover:text-black"
+  onClick={onClose}
+>
+  ✕
+</button>
+
       </div>
     </div>
   );

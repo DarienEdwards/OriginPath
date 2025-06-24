@@ -1,14 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'https://esm.sh/mapbox-gl@2.15.0';
 
-mapboxgl.accessToken =
-  window.MAPBOX_TOKEN ||
-  'pk.eyJ1IjoiZGFyaWVuZWR3YXJkcyIsImEiOiJjbWJ6Y29waTUxeG93MmxwdGZjbzhibTdoIn0.0oLGkv-Zk7J0-ah4aO8dUA';
+
+mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+
 
 const MapView = ({ locations = [] }) => {
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef([]);
+  const routeLayerId = 'route-line';
+  const routeSourceId = 'route';
 
   useEffect(() => {
     mapRef.current = new mapboxgl.Map({
@@ -27,44 +29,26 @@ const MapView = ({ locations = [] }) => {
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || locations.length === 0) {
-      clearMap();
-      return;
-    }
+    if (!map || !map.isStyleLoaded()) return;
 
-    if (!map.isStyleLoaded()) {
-      map.once('style.load', () => updateMap(locations));
-    } else {
-      updateMap(locations);
-    }
-  }, [locations]);
-
-  const clearMap = () => {
-    const map = mapRef.current;
-    if (!map) return;
-
-    // Remove markers
-    markersRef.current.forEach((m) => m.remove());
+    // Clear old markers
+    markersRef.current.forEach(marker => marker.remove());
     markersRef.current = [];
 
-    // Remove route
-    if (map.getLayer('route-line')) {
-      map.removeLayer('route-line');
+    // Remove existing route layer and source
+    if (map.getLayer(routeLayerId)) {
+      map.removeLayer(routeLayerId);
     }
-    if (map.getSource('route')) {
-      map.removeSource('route');
+    if (map.getSource(routeSourceId)) {
+      map.removeSource(routeSourceId);
     }
-  };
 
-  const updateMap = (locations) => {
-    const map = mapRef.current;
-    if (!map) return;
-
-    clearMap();
+    // Don't render if nothing selected
+    if (!locations.length) return;
 
     const bounds = new mapboxgl.LngLatBounds();
 
-    locations.forEach((loc) => {
+    locations.forEach(loc => {
       const marker = new mapboxgl.Marker()
         .setLngLat([loc.lng, loc.lat])
         .addTo(map);
@@ -72,47 +56,52 @@ const MapView = ({ locations = [] }) => {
       bounds.extend([loc.lng, loc.lat]);
     });
 
+    const routeCoordinates = locations.map(loc => [loc.lng, loc.lat]);
+
+    const routeData = {
+      type: 'Feature',
+      geometry: {
+        type: 'LineString',
+        coordinates: routeCoordinates,
+      },
+    };
+
+    map.addSource(routeSourceId, {
+      type: 'geojson',
+      data: routeData,
+    });
+
+    map.addLayer({
+      id: routeLayerId,
+      type: 'line',
+      source: routeSourceId,
+      layout: {
+        'line-join': 'round',
+        'line-cap': 'round',
+      },
+      paint: {
+        'line-color': '#ff7e5f',
+        'line-width': 4,
+      },
+    });
+
+    // Fit map to route
     if (locations.length > 1) {
-      const routeCoordinates = locations.map((loc) => [loc.lng, loc.lat]);
-      const routeData = {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'LineString',
-          coordinates: routeCoordinates,
-        },
-      };
-
-      map.addSource('route', {
-        type: 'geojson',
-        data: routeData,
-      });
-
-      map.addLayer({
-        id: 'route-line',
-        type: 'line',
-        source: 'route',
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round',
-        },
-        paint: {
-          'line-color': '#ff7e5f',
-          'line-width': 4,
-        },
-      });
-    }
-
-    if (locations.length > 0) {
       map.fitBounds(bounds, {
         padding: 60,
         duration: 800,
         maxZoom: 4.5,
       });
+    } else {
+      map.flyTo({
+        center: [locations[0].lng, locations[0].lat],
+        zoom: 4,
+        duration: 800,
+      });
     }
-  };
+  }, [locations]);
 
-  return <div ref={mapContainer} className="w-full h-full bg-gray-200 rounded-md" />;
+  return <div ref={mapContainer} className="w-full h-full rounded-md bg-gray-200" />;
 };
 
 export default MapView;

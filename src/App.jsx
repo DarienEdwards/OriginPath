@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import Header from './components/Header.jsx';
 import PartList from './components/PartList.jsx';
+import PartModal from './components/PartModal.jsx';
 import MapView from './components/MapView.jsx';
+import AIInsights from './components/AIInsights.jsx';
 import locationsJson from './data/locations.json';
+
 
 const partData = {
   'Battery Pack': {
@@ -29,8 +33,9 @@ const partData = {
 
 function App() {
   const [selectedPart, setSelectedPart] = useState(null);
-  const [insight, setInsight] = useState(null);
-  const [loadingInsight, setLoadingInsight] = useState(false);
+  const [insight, setInsight] = useState('');
+  const [aiInsight, setAiInsight] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const parts = Object.keys(partData);
 
@@ -38,83 +43,110 @@ function App() {
     const details = partData[part];
     if (details) {
       setSelectedPart({ title: part, ...details });
-      setInsight(null); // Reset insight when switching parts
+      setAiInsight('');
     }
   };
 
   const getLocationsForPart = (partName) => {
     if (!partName) return [];
-    return locationsJson.locations.filter((loc) => loc.componentId === partName.toLowerCase().replace(' ', ''));
+    if (partName === 'Battery Pack') return locationsJson.locations.filter(loc => loc.componentId === 'battery');
+    if (partName === 'Electric Motor') return locationsJson.locations.filter(loc => loc.componentId === 'motor');
+    if (partName === 'Aluminum Chassis') return locationsJson.locations.filter(loc => loc.componentId === 'chassis');
+    if (partName === 'Infotainment System') return locationsJson.locations.filter(loc => loc.componentId === 'infotainment');
+    return [];
   };
 
-  const handleRegenerateInsight = async () => {
-    if (!selectedPart) return;
-    setLoadingInsight(true);
+  const generateInsight = async (partName) => {
+    if (!partName) return;
+    setLoading(true);
+  
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: 'gpt-4',
+      const response = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: 'gpt-3.5-turbo',
           messages: [
             {
               role: 'system',
-              content: 'You are an environmental analyst providing geopolitical and sustainability insights.',
+              content: 'You are an expert on supply chains and sustainability.',
             },
             {
               role: 'user',
-              content: `Give me a brief analysis of environmental and geopolitical risks for this part: ${selectedPart.title}, with this route: ${selectedPart.route}, and these risks: ${selectedPart.risks}`,
+              content: `Explain the environmental and geopolitical risks of the ${partName} in an electric car.`,
             },
           ],
-        }),
-      });
-
-      const data = await response.json();
-      const text = data?.choices?.[0]?.message?.content || 'No insight returned.';
-      setInsight(text.trim());
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+          },
+        }
+      );
+  
+      const aiText = response.data.choices[0].message.content;
+      setAiInsight(aiText); // ✅ CORRECT ONE
     } catch (err) {
-      setInsight('Error retrieving insight.');
+      console.error('Failed to fetch AI insight:', err);
+      setAiInsight('Sorry, we couldn’t fetch insights at this time.');
     } finally {
-      setLoadingInsight(false);
+      setLoading(false);
     }
   };
+  
+  
 
   return (
-    <div className="app-container">
-      <Header title="OriginPath" subtitle="Trace the supply chain of the Tesla Model 3" />
+    <div className="app-container min-h-screen flex flex-col">
+      <Header
+        title="OriginPath"
+        subtitle="Trace the supply chain of the Tesla Model 3"
+      />
 
-      <main className="grid grid-cols-3 gap-4 p-4">
-        <PartList parts={parts} onSelect={handleSelect} />
+      <main className="flex flex-1 p-4 gap-4">
+        {/* Sidebar */}
+        <div className="w-1/4">
+          <PartList parts={parts} onSelect={handleSelect} />
+        </div>
 
-        <section className="col-span-2 grid grid-cols-3 gap-4">
-          <div className="col-span-2 border p-4 relative h-96">
+        {/* Map and Details */}
+        <div className="w-3/4 flex gap-4">
+          {/* Map */}
+          <section className="w-2/3 border p-4 relative h-[550px] rounded">
             <h2 className="font-semibold text-lg mb-2">Supply Chain Map</h2>
             <MapView locations={getLocationsForPart(selectedPart?.title)} />
-          </div>
+          </section>
 
-          {selectedPart && (
-            <div className="col-span-1 border p-4 bg-white rounded shadow-md h-96 overflow-y-auto">
-              <h2 className="font-bold text-lg mb-2">{selectedPart.title}</h2>
-              <p className="mb-2">{selectedPart.footprint}</p>
-              <p className="mb-2">{selectedPart.risks}</p>
-              <p className="mb-2">{selectedPart.route}</p>
-              <div className="mt-4">
-                <h3 className="font-semibold mb-2">🧠 AI Insights Panel</h3>
-                <p className="text-sm whitespace-pre-wrap">{insight || 'No insight returned.'}</p>
-                <button
-                  onClick={handleRegenerateInsight}
-                  className="mt-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                  disabled={loadingInsight}
-                >
-                  {loadingInsight ? 'Generating...' : 'Regenerate Insights'}
-                </button>
-              </div>
-            </div>
-          )}
-        </section>
+          {/* Details + AI */}
+          <aside className="w-1/3 border p-4 rounded bg-white">
+            {selectedPart ? (
+              <>
+                <h3 className="text-lg font-bold mb-2">{selectedPart.title}</h3>
+                <p className="text-sm mb-1">{selectedPart.footprint}</p>
+                <p className="text-sm mb-1">{selectedPart.risks}</p>
+                <p className="text-sm mb-3">{selectedPart.route}</p>
+
+                <div className="mt-4 p-3 border rounded bg-gray-50">
+                  <h4 className="font-semibold mb-2">🧠 AI Insights Panel</h4>
+                  {aiInsight ? (
+                    <p className="text-sm whitespace-pre-line">{aiInsight}</p>
+                  ) : (
+                    <p className="text-sm text-gray-500 italic">No insight yet.</p>
+                  )}
+
+                  <button
+                    className="mt-2 text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 disabled:opacity-50"
+                    onClick={() => generateInsight(selectedPart.title)}
+                    disabled={loading}
+                  >
+                    {loading ? 'Generating...' : 'Generate Insight'}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p className="text-gray-500 text-sm italic">Select a part to view details.</p>
+            )}
+          </aside>
+        </div>
       </main>
 
       <footer className="p-4 border-t text-sm text-gray-500 text-center">
